@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+/>
+  <link rel="stylesheet" href="/css/output.css">
+  <title>Chat App</title>
+  <style>
+    #message-container::-webkit-scrollbar{
+   display:none;
+    }
+  </style>
+</head>
+<body class="h-lvh bg-black text-white">
+  
+  <div class="w-lvw h-12 flex justify-between items-center px-3">
+    <h2 class="font-semibold">
+      <i class="ri-arrow-left-line mr-2" onclick="goBack()"></i>
+      <%=friend%>
+    </h2>
+    
+    <div class="px-3 rounded flex  gap-6 text-white text-xl" id="video-call-btn">
+       <a href="#"><i class="ri-video-on-line"></i></a>
+       <a href="#"><i class="ri-phone-line"></i></a>
+    </div>
+
+</div>
+<div class="bg-zinc-900 pt-2  overflow-y-auto " style="height: 81%;" id="message-container">
+  <div id="chat"></div>
+</div>
+
+   <div class=" h-12">
+    <form id="chatform" class="bg-zinc-900 p-2 " >
+        <input type="text" id="messagebox"  style="width:93%" class=" flex-1 bg-zinc-700 border-gray-300 rounded-md px-3 py-2 focus:outline-none "
+         placeholder="type a message....">
+         <button type="submit" class=" ml-2 bg-indigo-600 text-white py-2 px-4 rounded-md" id="send">
+          <i class="ri-send-plane-fill"></i>
+         </button>
+    </form>
+   </div> 
+   <script src="https://cdn.socket.io/4.8.0/socket.io.min.js" integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd" crossorigin="anonymous"></script>
+<script>
+      const chatform = document.querySelector("#chatform");
+    const messagebox = document.querySelector("#messagebox");
+    const recipient="<%=friend%>"
+    const messagecontainer = document.querySelector("#message-container");
+    var user = "<%=user.username%>"
+     var friend = "<%=friend%>"
+    var socket = io();
+    socket.emit("chat-with",{user,friend});
+chatform.addEventListener("submit",function(event){
+              event.preventDefault();     //iski mdd se form submit nhi ho paega 
+              socket.emit("message",JSON.stringify({from:user,to:recipient, message:messagebox.value}));
+         
+              const now = new Date();
+              const currentTime = now.toLocaleTimeString('en-US', { hour12: true,hour: '2-digit', minute: '2-digit'});
+             
+              
+              attachMessage(`${messagebox.value}`,currentTime);
+              document.getElementById('messagebox').value = ''; // Clear input
+            })
+   socket.on("alert",function(data){
+    alert(data)
+   })        
+socket.on("oldmessage",function(data){
+    if(data.from === "<%=user.username%>"){  
+          attachMessage(data.message, data.time);
+          console.log(data.time)
+          }else{
+            recieveMessage(data.message, data.time);
+          }
+})
+socket.on("newmessage",function(data){
+  recieveMessage(data.message,data.time)
+})
+function attachMessage(message,time){
+            const userMessageContainer = document.createElement('div');
+            userMessageContainer.classList.add('flex','mx-2', 'my-2', 'justify-end');
+
+            const userMessageDiv = document.createElement("div");
+            userMessageDiv.classList.add('bg-blue-500','text-white','py-1','px-3','rounded-lg','max-w-xs','flex','items-end','gap-2');
+            
+            const userMessageText = document.createElement('p');
+            userMessageText.textContent = message 
+             
+            const timeDiv = document.createElement('div');
+            timeDiv.classList.add('text-zinc-300','text-xs');
+            timeDiv.textContent = time;
+            
+            userMessageDiv.appendChild(timeDiv);
+            userMessageDiv.appendChild(userMessageText);
+            userMessageContainer.appendChild(userMessageDiv);
+
+            document.getElementById('message-container') .appendChild(userMessageContainer);
+            document.querySelector("#message-container").scrollTop = document.querySelector("#message-container").scrollHeight
+        }    
+function recieveMessage(message,time){
+            const userMessageContainer = document.createElement('div');
+            userMessageContainer.classList.add('flex','mx-2','my-2','justify-start');
+
+            const userMessageDiv = document.createElement("div");
+            userMessageDiv.classList.add('bg-gray-300','text-gray-800','py-1','px-3','rounded-lg','max-w-xs','flex','items-end','gap-2');
+            
+            const userMessageText = document.createElement('p');
+            userMessageText.textContent = message;
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.classList.add('text-zinc-700','text-xs');
+            timeDiv.textContent = time;
+            
+            userMessageDiv.appendChild(timeDiv);
+            userMessageDiv.appendChild(userMessageText);
+            userMessageContainer.appendChild(userMessageDiv);
+
+            document.getElementById('message-container') .appendChild(userMessageContainer);
+            document.querySelector("#message-container").scrollTop = document.querySelector("#message-container").scrollHeight
+        }    
+   function goBack(){
+        window.history.back();
+    }
+</script>
+</body>
+</html>

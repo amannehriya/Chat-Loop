@@ -1,7 +1,7 @@
 {
   "name": "omegle",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "socket.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build.css": "npx tailwindcss -i ./public/css/style.css -o ./public/css/output.css --watch"
@@ -11,11 +11,22 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "config": "^3.3.12",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.7",
+    "debug": "^4.3.7",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "flash": "^1.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.1",
     "nodemon": "^3.1.7",
     "path": "^0.12.7",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.14"

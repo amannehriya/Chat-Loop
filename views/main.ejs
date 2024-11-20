@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+/>
+    <link rel="stylesheet" href="/css/output.css">
+    <title>ChatLoop</title>
+</head>
+<body class="bg-black text-white ">
+    <div class=" h-12 font-semibold flex items-center justify-between px-3 text-2xl">
+        ChatLoop
+        <div>
+       <i class="ri-settings-2-line mr-3"></i>
+       
+       <a href="/logout" class=" logout relative text-xl  hover:text-red-500"><i class="ri-logout-box-r-line"></i>
+        <span class=" text-xs absolute right-1 -top-4 text-nowrap text-white  hidden tracking-tighter">
+           logout
+        </span></a>
+        </div>
+     </div>
+    <% friends.forEach(function(friend){ %>
+        <% if(friend.username !==user.username){ %>
+      
+            <a href="/user/<%=friend.username%>"> 
+                  <div class="h-8 bg-zinc-600 hover:bg-zinc-700 text-lg  mx-1 my-2 px-2" style="border-bottom: 1px solid white;"><%=friend.username%></div>
+             </a>
+            <% } %>
+    <% }) %>
+
+    <script>
+        function deleteA(){
+    let a = document.querySelector(".logout");
+     let span = document.querySelector(".logout span");
+     
+    
+       a.addEventListener("mouseenter",()=>{
+        span.style.display = "block";
+      
+        })
+    
+        a.addEventListener("mouseleave",()=>{
+        span.style.display = "none";
+       })
+    }
+   
+   deleteA();
+
+    </script>
+</body>
+</html>

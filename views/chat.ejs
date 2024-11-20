@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/css/output.css">
     <title>Document</title>
 </head>
-<body class="w-lvw h-lvh">
+<body class="w-lvw sm:h-lvh h-svh ">
     <div class="incomingCall  hidden z-50  w-full h-dvh bg-gray-900 bg-opacity-75 flex items-center justify-center">
         <div class="bg-white p-8 rounded-md text-center">
             <p class="mb-4">incoming call....</p>
@@ -30,21 +30,23 @@
         <div class="contoll-container relative bg-black h-12 w-12 flex justify-center items-center"  style="border-radius: 50%;" id="micButton">
             <i class="ri-mic-line  text-white"></i> 
         </div>
-        <div class="contoll-container relative bg-black h-12 w-12 flex justify-center items-center"  style="border-radius: 50%;"id="hangup" ><i class="ri-phone-fill"></i></div>
+        <div class="contoll-container relative bg-black h-12 w-12 flex justify-center items-center"  style="border-radius: 50%;"id="hangup" >
+          <i class="ri-phone-fill  text-white"></i></div>
       </div>
     </div>
 <div class="w-lvw h-12 flex justify-between items-center px-3">
     <h3 class="font-bold">chat</h3>
     <a href="#" class="px-3 rounded bg-blue-600 text-white" id="video-call-btn">video call</a>
 </div>
-<div class="bg-zinc-200 h-4/5 " id="message-container">
+<div class="bg-zinc-200 pt-2 h-4/5 " id="message-container">
     <div class=" nobody  text-zinc-400 "> nobody is there </div>
 </div>
 
    <div class="bg-white h-12">
     <form id="chatform" class="bg-white p-2 flex" >
         <input type="hidden" id="userid" value="">
-        <input type="text" id="messagebox" class="flex-1 border border-gray-300 rounded-md px-3 py-2 " placeholder="type a message....">
+        <input type="text" id="messagebox" class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none "
+         placeholder="type a message....">
          <button type="submit" class=" ml-2 bg-indigo-600 text-white py-2 px-4 rounded-md">send</button>
     </form>
    </div> 
@@ -177,7 +179,7 @@ const createPeerConnection = async () => {
 };
 
 const handleSignalingMessage = async (message) => {
-  const { type, offer, answer, candidate } = JSON.parse(message);
+  const { type, offer, answer, candidate, hangup } = JSON.parse(message);
 
   console.log("Received signaling message:", type);
 
@@ -186,7 +188,7 @@ const handleSignalingMessage = async (message) => {
   } else if (type === "answer" && peerConnection.signalingState === "have-local-offer") {
     handleAnswer(answer);
   }else if(type === "hangup") {
-    hangup();
+    hangup()
   }else if (type === "candidate" && peerConnection) {
     try {
       await peerConnection.addIceCandidate(candidate);
@@ -224,110 +226,11 @@ const handleAnswer = async (answer) => {
   }
 };
 
-        //wb rtc start
-    //     {
-    //     let localStream;
-    //     let remoteStream;
-    //     let peerConnection;
-    //     const rtcSetting ={
-    //             iceServers :[{urls:"stun:stun.l.google.com:19302"}],
-    //     }
-    //     let inCall = false; //ye ek check point he jo ki batayega video call ho rhi he ya nhi 
-        
-    //     const initialize = async()=>{
-    //         socket.on("signalingMesage",handlesignalingMesage); 
-    //     try {
-    //          localStream = await navigator.mediaDevices.getUserMedia({
-    //             audio:true,
-    //             video:true
-    //         })
-       
-    //         document.querySelector('#localvideo').srcObject = localStream;  //mtlb vo video tag localstream se video lega
-    //         document.querySelector('#localvideo').style.display = "block"; 
-    //          inCall=true;
-    //          initiateOffer ();
-    //     }catch(err){
-    //         console.log(err);
-    //         console.log("rejected by browser")
-    //          };
-    //     }
-    //     // initialize();
-
-    //     const initiateOffer = async()=>{
-    //         await createPeerConnection();
-    //      try  { 
-    //         const offer = await peerConnection.createOffer();
-    //         await peerConnection.setLocalDescription(offer);
-    //         socket.emit("signalingMesage",{room,message:JSON.stringify({type:"offer",offer})});
-    //     }
-    //     catch(err){
-    //         consolelog("error in creating offer "+ err)
-    //         }
-    //     }
       
-    //     const createPeerConnection = async()=>{
-    //         peerConnection = new RTCPeerConnection(rtcSetting);
-    //         remoteStream = new MediaStream();
-    //         document.querySelector("#remotevideo").srcObject = remoteStream;
-    //         document.querySelector("#remotevideo").style.display = "block";
-
-    //         localStream.getTracks().forEach(track=> {      //get track mtlb hmari video
-    //             peerConnection.addTrack(track,localStream);
-    //         });
-          
-
-    //         peerConnection.onicecandidate = (event)=>{
-    //             event.candidate &&
-    //             socket.emit("signalingMessage",{room,message:JSON.stringify({type:"candidate",candidate: event.candidate})});
-    //             console.log(event.candidate)
-    //         };
-    //         peerConnection.ontrack = (event)=>event.streams[0].getTracks().forEach(track=>remoteStream.addTrack(track));//on track mtlb samne vali ki video
-    //         peerConnection.onconnectionstatechange=()=>{
-    //             console.log("connection state change hui he",peerConnection.connectionState)
-    //         }
-    //     }
-     
-    //     const handlesignalingMesage = async(message)=>{
-    //        const {type, offer, answer, candidate} = JSON.parse(message);
-    //        if(type === "offer")handleOffer(offer);
-    //        if(type === "answer")handleAnswer(answer);
-    //        if(type === "candidate" && peerConnection){
-    //       try{ 
-    //          await peerConnection.addIceCandidate(candidate);
-    //       }catch(err){
-    //         console.log( "error in handling signalmsg" +err )
-    //       }
-    //        }
-    //     }
-     
-    //     const handleOffer = async(offer)=>{
-    //         await createPeerConnection();
-    //     try {
-    //         await peerConnection.setRemoteDescription(offer);
-    //         const answer = await peerConnection.createAnswer();
-    //         await peerConnection.setLocalDescription(answer);
-    //         socket.emit("signalingMesage",{room, message: JSON.stringify({type:"answer",answer})});
-    //         inCall = true;
-    //     }catch(err){
-    //          console.log("failed to handleOffer");
-    //     }
-    //     }
-     
-    //     const handleAnswer = async(answer)=>{
-    //    try{
-    //        await peerConnection.setRemoteDescription(answer)
-    //      }
-    //      catch(err){
-    //         console.log("failed to handle answer")
-    //      }
-    //     }
-      
-
-    // }
-      document.querySelector("#video-call-btn").addEventListener('click',()=>{
+document.querySelector("#video-call-btn").addEventListener('click',()=>{
            socket.emit("startVideoCall",{room})
                })
-      socket.on("incomingCall",()=>{
+socket.on("incomingCall",()=>{
         document.querySelector(".incomingCall").classList.remove("hidden")
       })
 
@@ -347,6 +250,7 @@ document.querySelector("#hangup").addEventListener("click",()=>{
 
 function hangup(){
   if(peerConnection){
+    console.log("hangup");
     peerConnection.close();
     peerConnection = null;
     localStream.getTracks().forEach(track => track.stop());

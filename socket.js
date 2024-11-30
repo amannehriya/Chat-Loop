@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname,"public")));
 app.use(express.urlencoded({extended:true}));
 
 const onlineUsers = new Map(); // Track online users with their socket IDs
-
+console.log(onlineUsers);
 io.on("connection",(socket)=>{
     // console.log("connect");
     socket.on("chat-with",async function(data){
@@ -69,8 +69,12 @@ io.on("connection",(socket)=>{
          if (recipientSocketId) {
              io.to(recipientSocketId).emit("newmessage",{ message, time:timeOnly});
          }
-})
-
+   })
+socket.on("disconnect",function(){
+    let user = onlineUsers.get(socket.id)
+    console.log(user +"disconncted");
+   
+  })
 });
 
 app.get("/",(req,res)=>{
@@ -84,7 +88,49 @@ app.get("/",(req,res)=>{
 
 app.post("/users/register",registerUser);
 app.post("/users/login",loginUser);
-
+app.get('/users/account',isLoggedIn,(req,res)=>{
+    let user = req.user;
+    let error = req.flash("error");
+    let notequal = req.flash("notequal");
+    res.render("accountSetting",{user,error,notequal})
+  })
+app.post("/users/update",isLoggedIn,async(req,res)=>{
+ 
+    try{  
+        let{username,password, newpassword, confirmpassword,email} = req.body;
+       let user = await userModel.findOne({username:req.user.username});
+      //for confirming that the person performing change is a varified user 
+      bcyrpt.compare(password,user.password,async(err,result)=>{
+      if(result){
+        if(newpassword==confirmpassword){
+      bcyrpt.genSalt(10,(err,salt)=>{
+        bcyrpt.hash(confirmpassword,salt,async(err,hash)=>{
+          let updateuser = await userModel.findOneAndUpdate({email:req.user.email},{
+            email,
+            phone,
+            address,
+            password:hash,
+            name
+        })
+       })
+      })
+      console.log(confirmpassword)
+      res.redirect("/users/account")
+      }else{
+        req.flash("notequal","password are not equal");
+        res.redirect("/users/account");
+      }
+      
+      }else{
+        req.flash("error","incorrect password");
+        res.redirect("/users/account");
+           }
+        })
+        // next();
+      }catch(err){
+        console.log(err)
+      }
+})
 app.get("/main",isLoggedIn,async (req,res)=>{
     let friends =  await userModel.find();
     let user = req.user;
